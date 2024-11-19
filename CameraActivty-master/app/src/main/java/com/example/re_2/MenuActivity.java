@@ -49,6 +49,13 @@ public class MenuActivity extends AppCompatActivity {
             bitmap_string= BitmapToString(bitmap);
            // Log.v("bitmapp_string=",bitmap_string);
             Log.v("bitmapp_string length:",bitmap_string.length()+"");
+            
+            //파일 비트맵 스트링으로 전환하고나서 파일 삭제 내가 추가함
+
+
+            boolean deleted = file.delete();
+            //
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

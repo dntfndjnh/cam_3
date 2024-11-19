@@ -271,12 +271,7 @@ public class CameraActivity extends AppCompatActivity {
             Toast.makeText(this, "load failed", Toast.LENGTH_SHORT).show();
         }
 
-        //불러오고 이미지 삭제 내가 추가함
-        String filename = "pic" + ".jpg";
 
-        File file = new File(storageDir, filename);
-        boolean deleted = file.delete();
-        //
     }
 
     @Override

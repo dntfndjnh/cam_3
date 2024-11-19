@@ -30,21 +30,24 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivCapture">
 
         <Button
             android:id="@+id/btnCapture"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="98dp"
+            android:layout_height="85dp"
+            android:textSize="17dp"
             android:text="CAMERA" />
 
         <Button
             android:id="@+id/btnSave"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="98dp"
+            android:layout_height="85dp"
+            android:textSize="17dp"
             android:text="주문하기" />
     </LinearLayout>
 
