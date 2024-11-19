@@ -123,9 +123,6 @@ public class CameraActivity extends AppCompatActivity {
                     mCurrentPhotoPath = ""; //initialize
                     Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
 
-                    //menu 액티비티에 값 넘겨주는건데 bitmap_string이 너무 커서 안넘어감 Get방식으로 서버에 넘길때도 될지 의문임
-                    intent.putExtra("bitmap_string",a);//그냥 테스트로 작은데이터 넘김
-                    //
 
                     startActivity(intent);
                 }
@@ -238,10 +235,12 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
 
-            Log.e(TAG, "Captured Saved");
-            Toast.makeText(this, "Capture Saved ", Toast.LENGTH_SHORT).show();
+           // Log.e(TAG, "Captured Saved");
+            Toast.makeText(this, "이미지 처리 중입니다", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Capture Saved ", Toast.LENGTH_SHORT).show();
             //이미지 위치 출력
-            Toast.makeText(this, image_location, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, image_location, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "잠시만 기다려주세요..!", Toast.LENGTH_SHORT).show();
             //
         } catch (Exception e) {
             Log.w(TAG, "Capture Saving Error!", e);
