@@ -125,6 +125,7 @@ public class CameraActivity extends AppCompatActivity {
 
 
                     startActivity(intent);
+                    finish();//카메라 액티비티 종료
                 }
 
             } catch (Exception e) {
@@ -255,9 +256,10 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void loadImgArr() {
+        File storageDir = null;
         try {
 
-            File storageDir = new File(getFilesDir() + "/capture");
+            storageDir = new File(getFilesDir() + "/capture");
             String filename = "pic" + ".jpg";
 
             File file = new File(storageDir, filename);
@@ -268,6 +270,13 @@ public class CameraActivity extends AppCompatActivity {
             Log.w(TAG, "Capture loading Error!", e);
             Toast.makeText(this, "load failed", Toast.LENGTH_SHORT).show();
         }
+
+        //불러오고 이미지 삭제 내가 추가함
+        String filename = "pic" + ".jpg";
+
+        File file = new File(storageDir, filename);
+        boolean deleted = file.delete();
+        //
     }
 
     @Override
