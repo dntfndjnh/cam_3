@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class BitmapConverter {
@@ -41,4 +42,7 @@ public class BitmapConverter {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
         return baos.toByteArray();
     }
+
+
+
 }
