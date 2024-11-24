@@ -48,29 +48,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-//AWS쓰려고 추가한 부분
-
-/*
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.rekognition.RekognitionClient;
-import software.amazon.awssdk.services.rekognition.model.RekognitionException;
-import software.amazon.awssdk.services.rekognition.model.DetectFacesRequest;
-import software.amazon.awssdk.services.rekognition.model.DetectFacesResponse;
-import software.amazon.awssdk.services.rekognition.model.Image;
-import software.amazon.awssdk.services.rekognition.model.Attribute;
-import software.amazon.awssdk.services.rekognition.model.FaceDetail;
-import software.amazon.awssdk.services.rekognition.model.AgeRange;
-import software.amazon.awssdk.core.SdkBytes;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.List;
-*/
-//
-
-//이미지 저장위치 변수
-
-//
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -219,10 +196,7 @@ public class CameraActivity extends AppCompatActivity {
                 output = new FileOutputStream(file);
                 BitmapDrawable drawable = (BitmapDrawable) ivCapture.getDrawable();
                 bitmap = drawable.getBitmap();//Bitmap bitmap = drawable.getBitmap()이였음
-                //Bitmap을 String으로 변환하는 함수 넣어봄
-                //Log.i("비트맵은:",BitmapToString(bitmap));
 
-                //
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 70, output); //해상도에 맞추어 Compress
 
             } catch (FileNotFoundException e) {

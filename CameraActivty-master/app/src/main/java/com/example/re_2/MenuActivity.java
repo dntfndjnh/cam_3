@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,8 +16,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.re_2.functions.retrofit.JsonPlaceHolderApi;
-import com.example.re_2.functions.retrofit.Post;
+import com.example.re_2.functions.retrofit.DataObject;
+import com.example.re_2.functions.retrofit.RetrofitClient;
+import com.example.re_2.functions.retrofit.RetrofitService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,12 +55,12 @@ public class MenuActivity extends AppCompatActivity {
             bitmap_string= BitmapToString(bitmap);
            // Log.v("bitmapp_string=",bitmap_string);
             Log.v("bitmapp_string length:",bitmap_string.length()+"");
-            
-            //파일 비트맵 스트링으로 전환하고나서 파일 삭제 내가 추가함
 
 
+            //파일 비트맵 스트링으로 전환하고나서 파일 삭제
             boolean deleted = file.delete();
             //
+
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -70,53 +72,33 @@ public class MenuActivity extends AppCompatActivity {
 
         //Retrofit Post설정
 
-        final String BASEURL = "http://jsonplaceholder.typicode.com/";
-        TextView textViewResult;
+        textView = findViewById(R.id.text_view_result);
+        RetrofitService service = RetrofitClient.getService();
 
-        JsonPlaceHolderApi jsonPlaceHolderApi;
-
-
-
-            textViewResult = findViewById(R.id.text_view_result);
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BASEURL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
+        // 전송할 데이터 생성
+        DataObject dataObject = new DataObject();
+        dataObject.setBitmap("bitmap="+bitmap_string);
 
 
-
-
-
-            Post post = new Post( bitmap_string);
-
-            Call<Post> call = jsonPlaceHolderApi.createPost(post);
-
-            call.enqueue(new Callback<Post>() {
-                @Override
-                public void onResponse(Call<Post> call, Response<Post> response) {
-                    if (!response.isSuccessful()) {
-                        textViewResult.setText("서버와 통신이 안됩니다\ncode: " + response.code());
-                        return;
-                    }
-
-                    Post postResponse = response.body();
-
-                    String content = "";
-
-                    content += "bitmap: " + postResponse.getBitmap() + "\n";
-
-
-                    textViewResult.setText(content);
+        // 서버에 요청
+        service.sendData(dataObject).enqueue(new Callback<DataObject>() {
+            @Override
+            public void onResponse(Call<DataObject> call, Response<DataObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // 응답 성공 시 TextView에 표시
+                    textView.setText(response.body().toString());
+                } else {
+                    textView.setText("응답 실패: " + response.code());
                 }
+            }
 
-                @Override
-                public void onFailure(Call<Post> call, Throwable t) {
-                    textViewResult.setText(t.getMessage());
-                }
-            });
+            @Override
+            public void onFailure(Call<DataObject> call, Throwable t) {
+                // 통신 실패 처리
+                textView.setText("통신 실패: " + t.getMessage());
+                Toast.makeText(MenuActivity.this, "통신 실패", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
         //
