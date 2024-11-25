@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -123,19 +124,49 @@ public class MenuActivity extends AppCompatActivity {
 
     private void displayCards(List<OutputData> outputDataList) {
         LinearLayout layout = findViewById(R.id.card_container);
+        
 
         for (OutputData data : outputDataList) {
+            // 카드뷰 생성
             MaterialCardView cardView = new MaterialCardView(this);
             cardView.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT));
             cardView.setCardElevation(8);
             cardView.setContentPadding(16, 16, 16, 16);
+            cardView.setRadius(16);
+            cardView.setUseCompatPadding(true);
 
+
+            // 카드 내부 레이아웃
+            LinearLayout cardLayout = new LinearLayout(this);
+            cardLayout.setOrientation(LinearLayout.VERTICAL);
+            cardLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            // 메뉴 정보 텍스트뷰
             TextView textView = new TextView(this);
-            textView.setText(String.format("Menu: %s\n주문횟수: %d", data.getMenu(), data.getCount()));
+            textView.setText(String.format("Menu: %s\nCount: %d", data.getMenu(), data.getCount()));
+            textView.setTextSize(18);
+            textView.setPadding(0, 0, 0, 16);
 
-            cardView.addView(textView);
+            // 주문하기 버튼
+            Button orderButton = new Button(this);
+            orderButton.setText("주문하기");
+            orderButton.setOnClickListener(v -> {
+                // 주문 버튼 클릭 시 이벤트
+                Toast.makeText(this, data.getMenu() + " 주문되었습니다!", Toast.LENGTH_SHORT).show();
+            });
+
+            // 카드 레이아웃에 텍스트와 버튼 추가
+            cardLayout.addView(textView);
+            cardLayout.addView(orderButton);
+
+            // 카드뷰에 레이아웃 추가
+            cardView.addView(cardLayout);
+
+            // 카드뷰를 메인 레이아웃에 추가
             layout.addView(cardView);
         }
     }
