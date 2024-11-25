@@ -47,4 +47,5 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'software.amazon.awssdk:rekognition:2.17.89'
     implementation 'software.amazon.awssdk:core:2.17.89'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 }

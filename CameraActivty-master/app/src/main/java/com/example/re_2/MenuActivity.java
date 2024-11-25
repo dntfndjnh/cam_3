@@ -1,5 +1,6 @@
 package com.example.re_2;
 
+import static com.example.re_2.functions.BitmapConverter.BitmapToByteArray;
 import static com.example.re_2.functions.BitmapConverter.BitmapToString;
 
 import android.annotation.SuppressLint;
@@ -7,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,19 +18,23 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.re_2.functions.retrofit.DataObject;
+import com.example.re_2.functions.retrofit.ApiService;
+import com.example.re_2.functions.retrofit.OutputData;
 import com.example.re_2.functions.retrofit.RetrofitClient;
-import com.example.re_2.functions.retrofit.RetrofitService;
+import com.google.android.material.card.MaterialCardView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MenuActivity extends AppCompatActivity {
@@ -45,6 +51,7 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         String bitmap_string ="";
+        byte[] byteArray = null;
 
         File storageDir = new File(getFilesDir() + "/capture");
         String filename = "pic" + ".jpg";
@@ -53,6 +60,12 @@ public class MenuActivity extends AppCompatActivity {
         try {
             Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
             bitmap_string= BitmapToString(bitmap);
+
+            // Bitmap을 ByteArray로 변환
+            byteArray = BitmapToByteArray(bitmap);
+            //
+
+
            // Log.v("bitmapp_string=",bitmap_string);
             Log.v("bitmapp_string length:",bitmap_string.length()+"");
 
@@ -71,32 +84,23 @@ public class MenuActivity extends AppCompatActivity {
 
 
         //Retrofit Post설정
+        RequestBody requestBody = RequestBody.create(byteArray, MediaType.parse("image/png"));
+        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", "sample_image.png", requestBody);
 
-        textView = findViewById(R.id.text_view_result);
-        RetrofitService service = RetrofitClient.getService();
-
-        // 전송할 데이터 생성
-        DataObject dataObject = new DataObject();
-        dataObject.setBitmap("bitmap="+bitmap_string);
-
-
-        // 서버에 요청
-        service.sendData(dataObject).enqueue(new Callback<DataObject>() {
+        // Retrofit 호출
+        ApiService apiService = RetrofitClient.getApiService();
+        apiService.uploadBitmap(imagePart).enqueue(new Callback<List<OutputData>>() {
             @Override
-            public void onResponse(Call<DataObject> call, Response<DataObject> response) {
+            public void onResponse(Call<List<OutputData>> call, Response<List<OutputData>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // 응답 성공 시 TextView에 표시
-                    textView.setText(response.body().toString());
-                } else {
-                    textView.setText("응답 실패: " + response.code());
+                    List<OutputData> outputDataList = response.body();
+                    displayCards(outputDataList);
                 }
             }
 
             @Override
-            public void onFailure(Call<DataObject> call, Throwable t) {
-                // 통신 실패 처리
-                textView.setText("통신 실패: " + t.getMessage());
-                Toast.makeText(MenuActivity.this, "통신 실패", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<OutputData>> call, Throwable t) {
+                t.printStackTrace();
             }
         });
 
@@ -116,4 +120,24 @@ public class MenuActivity extends AppCompatActivity {
             return insets;
         });
     }
+
+    private void displayCards(List<OutputData> outputDataList) {
+        LinearLayout layout = findViewById(R.id.card_container);
+
+        for (OutputData data : outputDataList) {
+            MaterialCardView cardView = new MaterialCardView(this);
+            cardView.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            cardView.setCardElevation(8);
+            cardView.setContentPadding(16, 16, 16, 16);
+
+            TextView textView = new TextView(this);
+            textView.setText(String.format("Menu: %s\n주문횟수: %d", data.getMenu(), data.getCount()));
+
+            cardView.addView(textView);
+            layout.addView(cardView);
+        }
+    }
 }
+
