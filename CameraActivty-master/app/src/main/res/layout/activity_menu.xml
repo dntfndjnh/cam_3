@@ -25,9 +25,37 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
+    <!-- 추천메뉴 텍스트뷰 -->
+    <TextView
+        android:id="@+id/recommended_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="추천메뉴"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 네트워크 오류 메시지 -->
+    <TextView
+        android:id="@+id/error_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text=""
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/recommended_menu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- 스크롤뷰 -->
     <ScrollView
-        android:text="서버와 통신이 되지 않습니다"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"

@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -51,7 +53,7 @@ public class MenuActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_menu);
 
-        String bitmap_string ="";
+        String bitmap_string = "";
         byte[] byteArray = null;
 
         File storageDir = new File(getFilesDir() + "/capture");
@@ -60,15 +62,15 @@ public class MenuActivity extends AppCompatActivity {
         File file = new File(storageDir, filename);
         try {
             Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            bitmap_string= BitmapToString(bitmap);
+            bitmap_string = BitmapToString(bitmap);
 
             // Bitmap을 ByteArray로 변환
             byteArray = BitmapToByteArray(bitmap);
             //
 
 
-           // Log.v("bitmapp_string=",bitmap_string);
-            Log.v("bitmapp_string length:",bitmap_string.length()+"");
+            // Log.v("bitmapp_string=",bitmap_string);
+            Log.v("bitmapp_string length:", bitmap_string.length() + "");
 
 
             //파일 비트맵 스트링으로 전환하고나서 파일 삭제
@@ -81,9 +83,6 @@ public class MenuActivity extends AppCompatActivity {
         }
 
 
-
-
-
         //Retrofit Post설정
         RequestBody requestBody = RequestBody.create(byteArray, MediaType.parse("image/png"));
         MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", "sample_image.png", requestBody);
@@ -94,25 +93,22 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<OutputData>> call, Response<List<OutputData>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<OutputData> outputDataList = response.body();
-                    displayCards(outputDataList);
+                    displayCards(response.body(), null); // 성공 시 데이터 전달
+                } else {
+                    displayCards(null, response.code()); // 실패 시 HTTP 상태 코드 전달
                 }
+
             }
 
             @Override
             public void onFailure(Call<List<OutputData>> call, Throwable t) {
                 t.printStackTrace();
+                displayCards(null, -1);
             }
         });
 
 
         //
-
-
-
-
-
-
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -122,10 +118,33 @@ public class MenuActivity extends AppCompatActivity {
         });
     }
 
-    private void displayCards(List<OutputData> outputDataList) {
-        LinearLayout layout = findViewById(R.id.card_container);
-        
 
+
+    private void displayCards(List<OutputData> outputDataList, Integer errorCode) {
+        LinearLayout layout = findViewById(R.id.card_container);
+        TextView errorTextView = findViewById(R.id.error_message);
+
+        // 네트워크 오류 발생 시 처리
+        if (errorCode != null) {
+            errorTextView.setVisibility(View.VISIBLE);
+            errorTextView.setText(String.format("서버와 통신 중 오류가 발생했습니다. (에러 코드: %d)", errorCode));
+
+            layout.removeAllViews(); // 기존 카드 제거
+            return;
+        }
+
+        // 데이터를 받아오지 못한 경우 처리
+        if (outputDataList == null || outputDataList.isEmpty()) {
+            errorTextView.setVisibility(View.VISIBLE);
+            errorTextView.setText("서버와 통신할 수 없습니다.");
+            layout.removeAllViews(); // 기존 카드 제거
+            return;
+        }
+
+        // 에러 메시지 숨기기
+        errorTextView.setVisibility(View.GONE);
+
+        // 데이터를 받아온 경우 카드 생성
         for (OutputData data : outputDataList) {
             // 카드뷰 생성
             MaterialCardView cardView = new MaterialCardView(this);
